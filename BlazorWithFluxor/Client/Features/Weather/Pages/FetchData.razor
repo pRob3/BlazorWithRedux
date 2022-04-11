@@ -1,9 +1,17 @@
 ﻿@page "/fetchdata"
+@inherits FluxorComponent
+
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using BlazorWithFluxor.Shared
+
+@using BlazorWithFluxor.Client.Features.Weather.Store
+
+@inject IDispatcher Dispatcher
+@inject IState<WeatherState> WeatherState
+
 @attribute [Authorize]
-@inject HttpClient Http
+
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -11,7 +19,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
+@if (loading)
 {
     <p><em>Loading...</em></p>
 }
@@ -38,20 +46,28 @@ else
             }
         </tbody>
     </table>
+    <br />
+    <button class="btn btn-outline-info" @onclick="LoadForecasts">Refresh Forecasts</button>
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
 
-    protected override async Task OnInitializedAsync()
+    private WeatherForecast[] forecasts => WeatherState.Value.Forecasts;
+    private bool loading => WeatherState.Value.Loading;
+
+    protected override void OnInitialized()
     {
-        try
+        if (WeatherState.Value.Initialized == false)
         {
-            forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+            LoadForecasts();
+            Dispatcher.Dispatch(new WeatherSetInitializedAction());
         }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-        }
+        base.OnInitialized();
     }
+
+    private void LoadForecasts()
+    {
+        Dispatcher.Dispatch(new WeatherLoadForecastsAction());
+    }
+
 }
