@@ -15,6 +15,10 @@ Implementing [Redux](https://redux.js.org/introduction/three-principles) pattern
     ```cmd
     dotnet restore
     ```
+3. Create database
+    ```cmd
+    update-database
+    ```
 4. Run Blazor WebAssembly in watch mode.
     ```cmd
     dotnet watch run
