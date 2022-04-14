@@ -1,3 +1,4 @@
+using Blazored.Toast;
 using BlazorWithFluxor.Client;
 using Fluxor;
 using Microsoft.AspNetCore.Components.Web;
@@ -15,6 +16,8 @@ builder.Services.AddHttpClient("BlazorWithFluxor.ServerAPI", client => client.Ba
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("BlazorWithFluxor.ServerAPI"));
 
 builder.Services.AddApiAuthorization();
+
+builder.Services.AddBlazoredToast();
 
 // Add Fluxor
 builder.Services.AddFluxor(options =>

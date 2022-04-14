@@ -1,4 +1,5 @@
-﻿using BlazorWithFluxor.Shared;
+﻿using BlazorWithFluxor.Features.Counter.Store;
+using BlazorWithFluxor.Shared;
 using Fluxor;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,6 @@ namespace BlazorWithFluxor.Client.Features.Weather.Store
         public WeatherForecast[] Forecasts { get; init; }
     }
 
-    // Feature
     public class WeatherFeature : Feature<WeatherState>
     {
         public override string GetName() => "Weather";
@@ -32,33 +32,6 @@ namespace BlazorWithFluxor.Client.Features.Weather.Store
         }
     }
 
-    // Actions
-    public class WeatherSetInitializedAction { }
-
-    public class WeatherSetForecastsAction
-    {
-        public WeatherForecast[] Forecasts { get; }
-
-        public WeatherSetForecastsAction(WeatherForecast[] forecasts)
-        {
-            Forecasts = forecasts;
-        }
-    }
-
-    public class WeatherSetLoadingAction
-    {
-        public bool Loading { get; }
-
-        public WeatherSetLoadingAction(bool loading)
-        {
-            Loading = loading;
-        }
-    }
-
-    public class WeatherLoadForecastsAction { }
-
-
-    // Reducers
     public static class WeatherReducers
     {
         [ReducerMethod]
@@ -89,14 +62,15 @@ namespace BlazorWithFluxor.Client.Features.Weather.Store
         }
     }
 
-    // Effects
     public class WeatherEffects
     {
         private readonly HttpClient Http;
+        private readonly IState<CounterState> CounterState;
 
-        public WeatherEffects(HttpClient http)
+        public WeatherEffects(HttpClient http, IState<CounterState> counterState)
         {
             Http = http;
+            CounterState = counterState;
         }
 
         [EffectMethod(typeof(WeatherLoadForecastsAction))]
@@ -104,8 +78,43 @@ namespace BlazorWithFluxor.Client.Features.Weather.Store
         {
             dispatcher.Dispatch(new WeatherSetLoadingAction(true));
             var forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+            await Task.Delay(1000);
             dispatcher.Dispatch(new WeatherSetForecastsAction(forecasts));
             dispatcher.Dispatch(new WeatherSetLoadingAction(false));
         }
+
+        [EffectMethod(typeof(CounterIncrementAction))]
+        public async Task LoadForecastsOnIncrement(IDispatcher dispatcher)
+        {
+            await Task.Delay(0);
+            if (CounterState.Value.CurrentCount % 10 == 0)
+            {
+                dispatcher.Dispatch(new WeatherLoadForecastsAction());
+            }
+        }
     }
+
+    #region WeatherActions
+    public class WeatherSetInitializedAction { }
+    public class WeatherLoadForecastsAction { }
+    public class WeatherSetForecastsAction
+    {
+        public WeatherForecast[] Forecasts { get; }
+
+        public WeatherSetForecastsAction(WeatherForecast[] forecasts)
+        {
+            Forecasts = forecasts;
+        }
+    }
+
+    public class WeatherSetLoadingAction
+    {
+        public bool Loading { get; }
+
+        public WeatherSetLoadingAction(bool loading)
+        {
+            Loading = loading;
+        }
+    }
+    #endregion
 }

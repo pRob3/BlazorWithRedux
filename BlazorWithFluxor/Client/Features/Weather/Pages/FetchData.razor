@@ -3,8 +3,8 @@
 
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using BlazorWithFluxor.Shared
 
+@using BlazorWithFluxor.Shared
 @using BlazorWithFluxor.Client.Features.Weather.Store
 
 @inject IDispatcher Dispatcher
@@ -19,7 +19,7 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (loading)
+@if (_loading)
 {
     <p><em>Loading...</em></p>
 }
@@ -35,7 +35,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var forecast in _forecasts)
             {
                 <tr>
                     <td>@forecast.Date.ToShortDateString()</td>
@@ -52,8 +52,8 @@ else
 
 @code {
 
-    private WeatherForecast[] forecasts => WeatherState.Value.Forecasts;
-    private bool loading => WeatherState.Value.Loading;
+    private WeatherForecast[] _forecasts => WeatherState.Value.Forecasts;
+    private bool _loading => WeatherState.Value.Loading;
 
     protected override void OnInitialized()
     {
