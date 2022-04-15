@@ -1,4 +1,4 @@
-﻿using BlazorWithFluxor.Features.Counter.Store;
+﻿using BlazorWithFluxor.Client.Features.Counter.Store;
 using BlazorWithFluxor.Shared;
 using Fluxor;
 using System;

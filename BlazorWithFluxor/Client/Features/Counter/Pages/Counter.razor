@@ -1,7 +1,7 @@
 ﻿@page "/counter"
 
 @inherits FluxorComponent
-@using BlazorWithFluxor.Features.Counter.Store
+@using BlazorWithFluxor.Client.Features.Counter.Store
 
 @inject IDispatcher Dispatcher
 @inject IState<CounterState> CounterState
@@ -12,7 +12,10 @@
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="IncrementCount">Increment</button>
+<button class="btn btn-outline-primary" @onclick="SaveCount">Save</button>
+<button class="btn btn-outline-info" @onclick="LoadCount">Load</button>
+<button class="btn btn-outline-danger" @onclick="ClearCount">Clear</button>
 
 @code {
     private int currentCount => CounterState.Value.CurrentCount;
@@ -21,4 +24,21 @@
     {
         Dispatcher.Dispatch(new CounterIncrementAction());
     }
+
+    private void SaveCount()
+    {
+        Dispatcher.Dispatch(new CounterPersistStateAction(CounterState.Value));
+    }
+
+    private void LoadCount()
+    {
+        Dispatcher.Dispatch(new CounterLoadStateAction());
+    }
+
+    private void ClearCount()
+    {
+        Dispatcher.Dispatch(new CounterClearStateAction());
+    }
+
+
 }

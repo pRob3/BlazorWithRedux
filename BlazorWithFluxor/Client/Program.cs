@@ -1,3 +1,4 @@
+using Blazored.LocalStorage;
 using Blazored.Toast;
 using BlazorWithFluxor.Client;
 using Fluxor;
@@ -16,12 +17,14 @@ builder.Services.AddHttpClient("BlazorWithFluxor.ServerAPI",
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("BlazorWithFluxor.ServerAPI"));
 
-
+builder.Services.AddApiAuthorization();
 
 builder.Services.AddBlazoredToast();
 
-
-
+builder.Services.AddBlazoredLocalStorage(config =>
+{
+    config.JsonSerializerOptions.WriteIndented = true;
+});
 
 // Add Fluxor
 builder.Services.AddFluxor(options =>
@@ -31,6 +34,8 @@ builder.Services.AddFluxor(options =>
         // For ReduxDevTool support. Don't have this in Production
         .UseReduxDevTools();
 });
-builder.Services.AddApiAuthorization();
+
+
+
 
 await builder.Build().RunAsync();
