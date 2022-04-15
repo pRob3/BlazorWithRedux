@@ -21,6 +21,7 @@ namespace BlazorWithFluxor.Server.Controllers
             _logger = logger;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
